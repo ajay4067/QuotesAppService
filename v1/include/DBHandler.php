@@ -43,7 +43,6 @@ class DbHandler {
     }
 
     public function resetPassword($email, $resetKey, $newPassword) {
-        echo $email . ', ' . $resetKey . ', ' . $newPassword;
         require_once 'PassHash.php';
         require_once 'Common.php';
         $common = new Common();
@@ -142,16 +141,19 @@ class DbHandler {
             $userRow = $common->getRowArrayUsingKeys($row, $common->getKeysArray('users'));
         }
         $userRow['resetMd5'] = $resetId;
-        $result = $this->db->users()->where('email', $email)->update($userRow);
+        $status = $userRow['status'];
         $emailNotification = false;
-        if ($result) {
-            $emailNotification = $util->sendResetEmail($email, $resetId);
-        }
-        if ($emailNotification) {
-            return true;
+        $result = false;
+        if ($status == 1) {
+            $result = $this->db->users()->where('email', $email)->update($userRow);
+            if ($result) {
+                $emailNotification = $util->sendResetEmail($email, $resetId);
+            }
         } else {
-            return false;
+            $response = $this->sendEmailOnSuccess($email, $util);
+            $emailNotification = ($response['status'] == 201 ? true : false);
         }
+        return ($emailNotification ? true : false);
     }
 
     public function getResetPermission($emailId, $resetId) {

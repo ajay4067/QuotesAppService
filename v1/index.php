@@ -17,8 +17,8 @@ $app->post('/register', function() use ($app, $db, $util) {
 $app->post('/login', function() use ($app, $db, $util) {
     login($app, $db, $util);
 });
-$app->get('/activateUser/:emailHash/:timestampMd5', function($emailHash, $timestampMd5) use ($db) {
-    activateUser($emailHash, $timestampMd5, $db);
+$app->get('/activateUser/:emailHash/:timestampMd5', function($emailHash, $timestampMd5) use ($app, $db) {
+    activateUser($app, $emailHash, $timestampMd5, $db);
 });
 $app->get('/userAvailable/:email', function($email) use ($db) {
     userAvailable($email, $db);
@@ -174,9 +174,12 @@ function userAvailable($email, $db) {
     echo json_encode($res);
 }
 
-function activateUser($emailHash, $timestampMd5, $db) {
+function activateUser($app, $emailHash, $timestampMd5, $db) {
     $res = $db->activateUser($emailHash, $timestampMd5);
-    echo json_encode($res);
+    $appendStr = $res['status'];
+    $app->response()->header('Content-Type', 'text/html');
+    $url = '"http://localhost/QuotesApp?activateUser&' . $appendStr . '"';
+    echo '<script>window.location = ' . $url . '</script>';
 }
 
 function register($app, $db, $util) {
@@ -217,7 +220,7 @@ function resetPswdPermission($app, $emailId, $resetId, $db) {
     $res = $db->getResetPermission($emailId, $resetId);
     $appendStr = $res['status'];
     if ($res['status'] == 200) {
-        $appendStr = $appendStr . '&' . $res['message']['resetKey'];
+        $appendStr = $appendStr . '&' . $res['message']['resetKey'] . '***' . $emailId;
     }
     $app->response()->header('Content-Type', 'text/html');
     $url = '"http://localhost/QuotesApp?forgotPswd&' . $appendStr . '"';
