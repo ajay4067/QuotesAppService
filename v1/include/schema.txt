@@ -1,0 +1,33 @@
+CREATE DATABASE quoteInspire;
+
+USE quoteInspire;
+
+CREATE TABLE IF NOT EXISTS `writersNCtgs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(40) NOT NULL,
+  `imageURL` varchar(60) NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `quotes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `quote` text NOT NULL,
+  `wrNctg_ref` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS 'users' (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `password_hash` varchar(70) NOT NULL,
+  `api_key` varchar(70) NOT NULL,
+  `status` int(2) NOT NULL,
+  
+  PRIMARY KEY (`id`)
+);
+
+ALTER TABLE  `quotes` ADD FOREIGN KEY (  `wrNctg_ref` ) REFERENCES  `quoteInspire`.`writersNCtgs` (
+`id`
+) ON DELETE CASCADE ON UPDATE CASCADE ;
