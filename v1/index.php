@@ -59,6 +59,9 @@ $app->get('/forgotPswd/resetPermission/:emailId/:resetId', function($emailId, $r
 $app->post('/forgotPswd', function() use ($app, $db, $util) {
     resetPswd($app, $db, $util);
 });
+$app->get('/resendEmailInvite/:email', function($email) use ($db) {
+    resendEmailInvite($email, $db);
+});
 $app->get('/testCall', function() use ($app, $db, $util) {
     testCall($app, $db, $util);
 });
@@ -235,6 +238,11 @@ function resetPswd($app, $db, $util) {
     $newPassword = $app->request()->post('newPassword');
     $response = $db->resetPassword($email, $resetKey, $newPassword);
     echoRespnse($response['status'], $response['message']);
+}
+
+function resendEmailInvite($email, $db){
+    $res = $db->resendEmailInvite($email);
+    echoRespnse($res['status'], $res['message']);
 }
 
 function testCall($app, $db, $util) {

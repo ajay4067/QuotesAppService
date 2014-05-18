@@ -42,6 +42,19 @@ class DbHandler {
         return $response;
     }
 
+    public function resendEmailInvite($email) {
+        require_once 'Utils.php';
+        $util = new UtilHandler();
+        $response = array();
+        $isUserPresent = $this->db->users()->where('email', $email);
+        if ($isUserPresent->fetch()) {
+            $response = $this->sendEmailOnSuccess($email, $util);
+        } else {
+            $response = array('status' => 500, 'message' => 'User was not found.');
+        }
+        return $response;
+    }
+
     public function resetPassword($email, $resetKey, $newPassword) {
         require_once 'PassHash.php';
         require_once 'Common.php';
