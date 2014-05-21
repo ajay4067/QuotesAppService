@@ -89,8 +89,14 @@ $app->post('/forgotPswd', function() use ($app, $db, $util) {
 $app->get('/resendEmailInvite/:email', function($email) use ($db) {
     resendEmailInvite($email, $db);
 });
+$app->get('/readCategory', function() use ($dbQuote) {
+    readCategories($dbQuote);
+});
+$app->get('/readQuote/:ctgId', function($ctgId) use ($dbQuote) {
+    readQuotes($ctgId, $dbQuote);
+});
 $app->get('/testCall', 'authenticate', function() use ($app, $db, $util) {
-    testCall($app, $db, $util);
+    
 });
 $app->run();
 
@@ -184,6 +190,7 @@ function unlikeCategory($id, $db, $user_id) {
     $res = $db->unlikeCategory($id, $user_id);
     echoRespnse($res['status'], $res);
 }
+
 function likeQuote($id, $dbQuote, $user_id) {
     $res = $dbQuote->likeQuote($id, $user_id);
     echoRespnse($res['status'], $res);
@@ -294,4 +301,14 @@ function testCall($app, $db, $util) {
 //    $util->testCall();
 //    $app->response()->header('Content-Type', 'text/html');
 //    echo "<script>window.location = 'http://localhost/QuotesApp?doSomething'</script>";
+}
+
+function readCategories($dbQuote) {
+    $res = $dbQuote->getReadCtgs();
+    echoRespnse($res['status'], $res['message']);
+}
+
+function readQuotes($ctgId, $dbQuote) {
+    $res = $dbQuote->getReadQuotes($ctgId);
+    echoRespnse($res['status'], $res['message']);
 }

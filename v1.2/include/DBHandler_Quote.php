@@ -142,6 +142,34 @@ class DbHandlerQuote {
         }
     }
 
+    function getReadCtgs() {
+        $writersNCtgsList = array();
+        foreach ($this->db->writersNCtgs() as $row) {
+            $writersNCtgsList[] = array('id' => $row['id'], 'name' => $row['name'],
+                'description' => $row['description']);
+        }
+        if (sizeof($writersNCtgsList) > 0) {
+
+            return array('status' => 200, 'message' => $writersNCtgsList);
+        } else {
+            return array('status' => 400, 'message' => false);
+        }
+    }
+
+    function getReadQuotes($ctgId) {
+        $quotesFromDb = $this->db->quotes()->where('wrNctg_ref', $ctgId);
+        $quoteList = array();
+        foreach ($quotesFromDb as $row) {
+            array_push($quoteList, array('id' => $row['id'],
+                'text' => $row['quote']));
+        }
+        if ($quoteList) {
+            return array('status' => 200, 'message' => $quoteList);
+        } else {
+            return array('status' => 400, 'message' => false);
+        }
+    }
+
     public function getAllQuotesData() {
         $writersNCtgsList = array();
         foreach ($this->db->writersNCtgs() as $row) {
